@@ -1,0 +1,94 @@
+{% load i18n %}
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="renderer" content="webkit">
+
+    <title>{% trans 'page_title' %}</title>
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+
+
+    <script src="{% static 'js/jquery-1.12.2.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <link rel="stylesheet" href="{% static 'css/loading.css' %}">
+    <script>
+
+        $(document).ready(function() {
+            $("#login_form").submit(function(event) {
+                event.preventDefault();
+                    $.ajax({
+                        url : "/backend/login/",
+                        type : "POST",
+                        dataType: "json",
+                        timeout:8000,
+                        data : {
+                            email : $("#inputEmail").val(),
+                            password : $("#inputPassword").val(),
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                            },
+                        beforeSend:function () {
+                            $("#loading").show()
+                        },
+                        success : function(data) {
+                            $("#loading").hide()
+                            if(data.status == "success"){
+                                window.location.href = data.result
+                            }
+                            else {
+                                $("#info").html(data.result)
+                            }
+                        },
+                        error : function(xhr,errmsg,err) {
+
+                            $("#loading").hide()
+                        }
+                    });
+                return false;
+            });
+        });
+    </script>
+
+</head>
+<body>
+    <div class="container-fluid">
+      <form class="form-signin" id="login_form" method="post">
+          {% csrf_token %}
+        <h2 class="form-signin-heading">Login In</h2>
+
+        <input type="email" class="form-control" id="inputEmail" placeholder="Email" name="email" required="required">
+
+        <input type="password" class="form-control" id="inputPassword" placeholder="Password" name="password" required="required">
+
+          <div class="form-group" id="info">
+
+          </div>
+          <div class="form-group">
+            <button class="btn btn-primary" id="login_btn" type="submit">Log In</button>
+          </div>
+
+
+          <div id="loading">
+              <div id="loading-center">
+                  <div id="loading-center-absolute">
+                      <div class="object" id="object_one"></div>
+                      <div class="object" id="object_two"></div>
+                      <div class="object" id="object_three"></div>
+                      <div class="object" id="object_four"></div>
+                  </div>
+              </div>
+          </div>
+
+      </form>
+
+
+    </div>
+</body>
+</html>

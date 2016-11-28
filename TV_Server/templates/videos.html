@@ -1,0 +1,130 @@
+{% extends "index.html" %}
+{% load staticfiles %}
+
+
+{% block script %}
+    <link href="{% static 'css/video_widght.css' %}" rel="stylesheet">
+
+    <script>
+        function add_video() {
+{#            console.log("ss==",{{ host }});#}
+            window.location.href="http://127.0.0.1:8000/backend/videos/addvideo/";
+        }
+
+        function openVideo(obj) {
+            var curObj = obj;
+
+            var video_widght = document.getElementById('video_widght');
+            video_widght.setAttribute("src",curObj.innerHTML);
+
+            var video_title = document.getElementById('video_title');
+            video_title.innerHTML =curObj.parentNode.children[1].innerHTML;
+
+            $("#videoModal").modal({
+                backdrop:'static',
+                show:true,
+            });
+        }
+
+        function closeVide() {
+            var video_widght = document.getElementById('video_widght');
+            video_widght.pause();
+        }
+    </script>
+    
+{% endblock %}
+
+{% block content %}
+<div id="content">
+        <div class="panel-group">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    {{ table_title  }}
+                </div>
+                <!-------------- panel-body start-------------->
+                <div class="panel-body">
+                    <div class="list-op navbar-right" id="list_op">
+                        <button type="button" class="btn btn-default btn-sm" onclick="add_video();">
+                            <span class="glyphicon glyphicon-plus" aria-hidden="true" ></span>新增
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm" onclick="deleteRow();">
+                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+                        </button>
+                    </div>
+                </div>
+                <!-------------- panel-body end-------------->
+
+            {% if objects|length > 0 %}
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr class="success">
+                        {% for item in head_list %}
+                            <th>{{ item }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                {% for item in objects %}
+                    <tr id="{{ item.id }}">
+                        <td>
+                            {{ item.title }}
+                        </td>
+                        <td>{{ item.manager_id}}</td>
+                        <td>{{ item.serials_id}}</td>
+                        <td class="gesture" onclick="openVideo(this)">{{ item.video_url}}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="panel-footer text-center">
+					<nav>
+						<ul class="pagination pagination-sm">
+                            {% if objects.has_previous %}
+                                <li><a href="?page=1">首页</a></li>
+                            {% else %}
+                                <li class="disabled"><a>首页</a></li>
+                            {% endif %}
+
+                            {% for p in page_range %}
+                            {% ifequal p objects.number %}
+                                <li class="active"><a>{{p}}</a></li>
+                            {% else %}
+                                <li><a href="?page={{p}}" title="第{{p}}页">{{p}}</a><li>
+                            {% endifequal %}
+                            {% endfor %}
+
+                            {% if objects.has_next %}
+                            <li><a href="?page={{ page_count }}">尾页</a></li>
+                            {% else %}
+                            <li class="disabled"> <a>尾页</a></li>
+                            {% endif %}
+
+						</ul>
+					</nav>
+				</div>
+
+            {% endif %}
+            </div>
+        </div>
+
+
+    <div class="modal fade" id="videoModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeVide()"><span aria-hidden="true">&times;</span></button>
+                    <h4 id="video_title" class="modal-title">Modal title</h4>
+                </div>
+
+                <div class="modal-body">
+                    <video id="video_widght" width="600px" height="500px" controls="controls" preload="auto">
+                    </video>
+                </div>
+
+
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    </div>
+{% endblock %}

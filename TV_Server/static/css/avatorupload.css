@@ -1,0 +1,35 @@
+#avatorupload{
+    width: 60px;
+    height: 60px;
+    line-height: 10px;
+    position: relative;
+    cursor: pointer;
+    color: #888;
+    background: #fafafa;
+
+    border-radius: 4px;
+
+
+}
+
+#avatorupload  input {
+    position: absolute;
+    right: 0;
+    top: 0;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    cursor: pointer;
+    height:100%;
+}
+
+#avatorupload:hover {
+    color: #444;
+    background: #eee;
+    border-color: #ccc;
+    text-decoration: none
+}
+
+#avator_logo{
+    width: 60px;
+    height: 60px;
+}

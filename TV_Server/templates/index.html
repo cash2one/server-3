@@ -1,0 +1,320 @@
+{% load i18n %}
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+{#    <meta name="viewport" content="width=device-width, initial-scale=1">#}
+    <meta name="renderer" content="webkit">
+    <title>Title</title>
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+
+    <script src="{% static 'js/jquery-1.12.2.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <link rel="stylesheet" href="{% static 'css/loading.css' %}">
+    <link rel="stylesheet" href="{% static "css/avatorupload.css" %}">
+
+    <script src="{% static 'js/tablecheckbox.js' %}"></script>
+
+    {% block script %}
+    {% endblock %}
+
+    <script>
+        function detail(obj){
+            var item_id = obj.getAttribute("id");
+            if (window.location.pathname == "/backend/index/"){
+                path = "/backend/manager/detail/";
+                 window.location.href="http://127.0.0.1:8000"+path+item_id;
+            }
+            else if(window.location.pathname == "/backend/tags/"){
+                path = "/backend/addtag/";
+            }
+            else if(window.location.pathname == "/backend/serials/"){
+                path = "/backend/addserials/";
+            }
+            else if(window.location.pathname == "/backend/videos/"){
+                path = "/backend/addvideo/";
+            }
+        }
+
+        $(function () {
+            function stripTrailingSlash(str) {
+                if(str.substr(-1) == '/') {
+                return str.substr(0, str.length - 1);}
+                return str;
+            }
+
+            var url = window.location.pathname;
+            var activePage = stripTrailingSlash(url);
+
+            $('.nav li a').each(function(){
+                var currentPage = stripTrailingSlash($(this).attr('href'));
+
+                if (activePage == currentPage) {
+                $(this).parent().addClass('active');
+            }
+            else {
+                $(this).parent().removeClass('active')
+                }
+            });
+        });
+
+        function preImg() {
+                if (typeof FileReader === 'undefined') {
+                    alert('Your browser does not support FileReader...');
+                    return;
+                }
+                var reader = new FileReader();
+
+                reader.onload = function(e) {
+                    var img = document.getElementById("avator_logo");
+                    img.src = this.result;
+                }
+                reader.readAsDataURL(document.getElementById("headshot").files[0]);
+            }
+
+
+
+$(document).ready(function() {
+            $("#add_form").submit(function(event) {
+                var formData = new FormData($(this)[0]);
+                var path = getAddPath();
+
+
+                event.preventDefault();
+                    $.ajax({
+                        url : path,
+                        type : "POST",
+                        dataType: "json",
+                        timeout:8000,
+                        contentType: false,
+                        processData: false,
+                        data : formData,
+                        beforeSend:function () {
+                            $("#loading").show()
+                        },
+                        success : function(data) {
+                            $("#loading").hide();
+                            $("#base_modal").modal('hide');
+                            $("#base_modal").hide();
+                            if(data.status == "success"){
+                                window.location.reload();
+                            }
+                            else {
+                                alert("err");
+                            }
+                        },
+                        error : function(xhr,errmsg,err) {
+
+                            $("#loading").hide();
+                            $("#base_modal").modal('hide');
+                            $("#base_modal").hide();
+                        }
+                    });
+                return false;
+            });
+        });
+
+        function getAddPath() {
+            var path;
+            if (window.location.pathname == "/backend/index/"){
+                path = "/backend/addmanager/";
+            }
+            else if(window.location.pathname == "/backend/tags/"){
+                path = "/backend/addtag/";
+            }
+            else if(window.location.pathname == "/backend/serials/"){
+                path = "/backend/addserials/";
+            }
+            else if(window.location.pathname == "/backend/videos/"){
+                path = "/backend/addvideo/";
+            }
+            return path;
+        }
+
+    </script>
+
+</head>
+<body>
+    <div class=".container">
+    <nav class="navbar navbar-inverse" id="mainnav" >
+        <div class="container-fluid">
+            <div class="navbar-default">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/backend/index">Admin</a>
+            </div>
+
+           <ul class="nav navbar-nav navbar-left" id="navs">
+                    <li class="active"  >
+                        <a class="nav-link" href="/backend/index" >Managers</a>
+                    </li>
+                    <li  >
+                        <a class="nav-link" href="/backend/tags" >Tags</a>
+                    </li>
+                    <li >
+                        <a class="nav-link" href="/backend/serials" >Serials</a>
+                    </li>
+                    <li   >
+                        <a class="nav-link" href="/backend/videos" >Videos</a>
+                    </li>
+           </ul>
+            <div id="navbar_right_div">
+                {% if  headshot|length > 1  %}
+                    <img class="img-circle" src="{{ headshot }}" alt="avator">
+                {% else %}
+                    <img src='{%  static "images/avator_bg.png" %}' alt="avator">
+                {% endif %}
+
+                <span >{{ user.nickname }}</span>
+            </div>
+        </div>
+    </nav>
+    {% block content %}
+    <div id="content">
+        <div class="panel-group">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    {{ table_title  }}
+                </div>
+                <!-------------- panel-body start-------------->
+                <div class="panel-body">
+                    <div class="list-op navbar-right" id="list_op">
+                        <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#base_modal" data-backdrop="static">
+                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm" onclick="deleteRow();">
+                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+                        </button>
+                    </div>
+                </div>
+                <!-------------- panel-body end-------------->
+
+            {% if objects|length > 0 %}
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr class="success">
+                        {% for item in head_list %}
+                            <th>{{ item }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                {% for item in objects %}
+                    <tr id="{{ item.id }}">
+                        {% block table_td %}
+
+                        {% endblock %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="panel-footer text-center">
+					<nav>
+						<ul class="pagination pagination-sm">
+                            {% if objects.has_previous %}
+                                <li><a href="?page=1">首页</a></li>
+                            {% else %}
+                                <li class="disabled"><a>首页</a></li>
+                            {% endif %}
+
+                            {% for p in page_range %}
+                            {% ifequal p objects.number %}
+                                <li class="active"><a>{{p}}</a></li>
+                            {% else %}
+                                <li><a href="?page={{p}}" title="第{{p}}页">{{p}}</a><li>
+                            {% endifequal %}
+                            {% endfor %}
+
+                            {% if objects.has_next %}
+                            <li><a href="?page={{ page_count }}">尾页</a></li>
+                            {% else %}
+                            <li class="disabled"> <a>尾页</a></li>
+                            {% endif %}
+
+						</ul>
+					</nav>
+				</div>
+
+            {% endif %}
+            </div>
+
+        </div>
+
+    </div>
+    {% endblock %}
+    <!-------------- base_modal start-------------->
+
+    <div class="modal fade" id="base_modal">
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title text-center">增加管理员</h4>
+            </div>
+
+            <!-------------- add_form start-------------->
+
+            <form  id="add_form"   method="post" enctype="multipart/form-data" >
+                {% csrf_token %}
+            <div class="modal-body">
+
+                    {% block add_form_content %}
+
+                    <div class="form-group">
+                        <label for="inputAvator">头像</label>
+                        <div id="avatorupload">
+                            <img  id="avator_logo" src="{% static "images/avator_bg.png" %}">
+                            <input type="file" id="headshot" name="headshot" accept="image/*" onchange="preImg();"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputEmail1">邮箱</label>
+                        <input type="email" class="form-control" name="email" id="inputEmail" placeholder="请输入邮箱">
+                    </div>
+                    <div class="form-group">
+                        <label for="inputPassword1">密码</label>
+                        <input type="password" class="form-control" name="password" id="inputPassword" placeholder="请输入密码">
+                    </div>
+                    <div class="form-group">
+                        <label for="inputNickname">姓名</label>
+                        <input type="text" class="form-control" name="nickname" id="inputName" placeholder="请输入姓名">
+                    </div>
+                    <div class="form-group">
+                        <label for="inputNickname">是否是超级管理员</label>
+                        <input type="checkbox" name="is_superuser" id="superuser"/>
+                    </div>
+
+                    {% endblock%}
+
+                </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button  class="btn btn-primary" id="save_btn" type="submit">保存</button>
+                    </div>
+                    <!-------------- loading start-------------->
+                        {% include "loading.html" %}
+                    <!-------------- loading end-------------->
+                </form>
+
+                <!-------------- add_form end-------------->
+            </div>
+        </div>
+    </div>
+
+    <!-------------- base_modal end-------------->
+</body>
+</html>

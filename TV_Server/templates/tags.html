@@ -1,0 +1,16 @@
+{% extends "index.html" %}
+
+{% block table_td %}
+    <td>
+        {{ item.title }}
+    </td>
+    <td>{{ item.manager_id}}</td>
+    <td>{{ item.created_at}}</td>
+{% endblock %}
+
+{% block add_form_content %}
+    <div class="form-group">
+        <label for="inputTag">标签</label>
+        <input type="text" class="form-control" name="title" id="inputTag" placeholder="请输入标签">
+    </div>
+{% endblock %}

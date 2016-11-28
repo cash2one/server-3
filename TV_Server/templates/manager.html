@@ -1,0 +1,19 @@
+{% extends "index.html" %}
+
+{% load staticfiles %}
+
+
+{% block table_td %}
+<td class="gesture" id="{{ item.id}}" onclick="detail(this);">
+    {{ item.id}}
+</td>
+<td >
+    {% if item.headshot.name|length > 1 %}
+    <img src='{{ item.headshot.name }}' alt="avator">
+    {% else %}
+    <img src='{%  static "images/avator_bg.png" %}' alt="avator">
+    {% endif %}
+</td>
+<td>{{ item.email}}</td>
+<td>{{ item.nickname}}</td>
+{% endblock %}

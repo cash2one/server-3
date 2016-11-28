@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block script %}
+<script>
+         function preImg(path) {
+
+                if (typeof FileReader === 'undefined') {
+                    alert('Your browser does not support FileReader...');
+                    return;
+                }
+                var reader = new FileReader();
+
+                reader.onload = function(e) {
+                console.log('s==',this.result);
+                    var img = document.getElementById("avator_logo");
+                    img.src = this.result;
+
+                }
+                reader.readAsDataURL(document.getElementById("headshot").files[0]);
+         }
+
+            var object;
+         function getDetailData(){
+
+                object = {{object|safe}}
+               var avator = object['0'].fields.headshot
+               var img = document.getElementById("avator_logo");
+               img.src = avator;
+
+
+               document.getElementById("email").value=object['0'].fields.email;
+               document.getElementById("inputName").value=object['0'].fields.nickname;
+               document.getElementById("superuser").checked=object['0'].fields.is_superuser;
+         }
+{##}
+         $(document).ready(function() {
+
+            getDetailData();
+         });
+
+         function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getCookie('csrftoken');
+
+        function updateProfile() {
+            console.log("ss=",csrftoken);
+
+
+             $.ajax({
+                        url : "/backend/alterManager/",
+                        type : "POST",
+                        dataType: "json",
+                        timeout:8000,
+
+                        data : {
+                            "userid":object['0'].pk,
+                            "is_superuser":document.getElementById("superuser").checked,
+                        },
+                        beforeSend:function (xhr, settings) {
+                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                            $("#loading").show()
+                        },
+                        success : function(data) {
+                            $("#loading").hide();
+                            $("#base_modal").modal('hide');
+                            $("#base_modal").hide();
+                            if(data.status == "success"){
+
+                            }
+                            else {
+
+                            }
+                        },
+                        error : function(xhr,errmsg,err) {
+
+                            $("#loading").hide();
+                            $("#base_modal").modal('hide');
+                            $("#base_modal").hide();
+                        }
+                    });
+        }
+
+        function deleteProfile() {
+            var ids = new Array();
+            ids.push(object['0'].pk);
+
+            $.ajax({
+            url : "/backend/delete_data/",
+            type : "GET",
+            dataType: "json",
+            timeout:8000,
+            data : {item:ids},
+            traditional: true,
+            beforeSend:function () {
+                $("#loading").show();
+            },
+            success : function(data) {
+
+                window.location.href="http://127.0.0.1:8000/backend/index/";
+            },
+            error : function(xhr,errmsg,err) {
+
+
+            }
+        });
+        }
+</script>
+{% endblock %}
+
+{% block main_content%}
+<div onload="">
+    <form id="edit_form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="modal-body">
+            {% block edit_form_content %}
+            <div class="form-group">
+                <label for="inputAvator">头像</label>
+                <div id="avatorupload">
+                    <img  id="avator_logo" src="{% static "images/avator_bg.png" %}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputEmail1">邮箱</label>
+                <input id="email" type="email" class="form-control" name="email" id="inputEmail" placeholder="请输入邮箱" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="inputNickname">姓名</label>
+                <input type="text" class="form-control" name="nickname" id="inputName" placeholder="请输入姓名" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="inputNickname">是否是超级管理员</label>
+                <input type="checkbox" name="is_superuser" id="superuser"/>
+            </div>
+
+            {% endblock%}
+        </div>
+
+        <div class="modal-footer">
+            <button  class="btn btn-warning" id="delete_btn" onclick="deleteProfile();" >删除</button>
+            <button  class="btn btn-primary" id="save_btn" onclick="updateProfile();" type="button">更新</button>
+        </div>
+    {% include "loading.html" %}
+    </form>
+</div>
+{% endblock%}

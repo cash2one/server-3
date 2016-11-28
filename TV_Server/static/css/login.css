@@ -1,0 +1,83 @@
+body{
+  background-color: #F6F3EE;
+  min-width: 520px;
+  height: auto;
+}
+
+.form-signin{
+  position: relative;
+  top: 100px;
+  margin: 0 auto;
+  width: 520px;
+  height: 340px;
+  border-radius: 5px;
+  background-color: #fff;
+  
+}
+/*A9D2CD 85C0BA*/
+.form-signin-heading{
+  position: absolute;
+  margin-top: 0px;
+  margin-bottom: 20px;
+  width: 520px;
+  line-height: 70px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  background-color: #699CBF;
+  color: white;
+  text-align: center;
+  font-weight: bold;
+  font-size:29px;
+}
+
+.form-signin .form-control {
+  position: relative;
+  margin-left: 20px;
+  width: 480px;
+  height: auto;
+  border: 0px;
+  padding: 10px;
+  background-color: #f6f6f6;
+  font-size: 16px;
+}
+
+#inputEmail{
+  position: absolute;
+  margin-top: 110px;
+}
+
+#inputPassword{
+  position: absolute;
+  margin-top: 180px;
+}
+
+#info{
+  color: red;
+  position: absolute;
+  margin-left: 20px;
+  margin-top: 235px;
+}
+
+#login_btn{
+  position: absolute;
+  margin-left: 20px;
+  margin-top: 270px;
+  width: 480px;
+  height: 50px;
+  background: #6FA540;
+  border: 0px;
+  font-weight: bold;
+  font-size:19px;
+}
+
+#form-signin-footer{
+  position: absolute;
+  margin-left: 200px;
+  margin-top: 260px;
+  width: 240px;
+  line-height: 50px;
+  text-align: left;
+  color: #999;
+  font-size: 15px;
+}
+/*eb4f38*/
